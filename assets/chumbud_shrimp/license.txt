@@ -1,0 +1,11 @@
+Model Information:
+* title:	Chumbud, Shrimp
+* source:	https://sketchfab.com/3d-models/chumbud-shrimp-a7efd84e6ead4d0e9eb97d01d3040f64
+* author:	Mr.Lime (https://sketchfab.com/Mr_Lime_2)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Chumbud, Shrimp" (https://sketchfab.com/3d-models/chumbud-shrimp-a7efd84e6ead4d0e9eb97d01d3040f64) by Mr.Lime (https://sketchfab.com/Mr_Lime_2) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3 uid="uid://b2gbydey8fml0"]
+
+[ext_resource type="Script" path="res://scripts/shrimp.gd" id="1_cf2d2"]
+[ext_resource type="PackedScene" uid="uid://ch2aqroq6bt6q" path="res://assets/chumbud_shrimp/shrimp.gltf" id="1_p5b6r"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_noj1b"]
+size = Vector3(0.5, 0.5, 1.75)
+
+[node name="shrimp" type="CharacterBody3D"]
+script = ExtResource("1_cf2d2")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_noj1b")
+
+[node name="visuals" type="Node3D" parent="."]
+
+[node name="shrimp" parent="visuals" instance=ExtResource("1_p5b6r")]
+transform = Transform3D(-2.99954, 0, 0.0523574, 0, 3, 0, -0.0523574, 0, -2.99954, 0, 0, 0)
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+avoidance_enabled = true
+height = 5.0
+radius = 5.0
+neighbor_distance = 10.0
+keep_y_velocity = false
+avoidance_layers = 7

@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://c74io72t8fofl"]
+
+[ext_resource type="Script" path="res://scripts/background_music.gd" id="1_q8ais"]
+
+[node name="Background Music" type="Node"]
+script = ExtResource("1_q8ais")
+
+[node name="neutralTrack" type="AudioStreamPlayer3D" parent="."]
+
+[node name="battleTrack" type="AudioStreamPlayer3D" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
