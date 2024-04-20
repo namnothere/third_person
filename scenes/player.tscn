@@ -1,16 +1,20 @@
-[gd_scene load_steps=4 format=3 uid="uid://c27s06nfgic2m"]
+[gd_scene load_steps=5 format=3 uid="uid://c27s06nfgic2m"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_d00tk"]
 [ext_resource type="PackedScene" uid="uid://b5afgcpcc11i2" path="res://assets/goob/scene.gltf" id="11_mi5bh"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_rdjb6"]
+height = 1.0
 radius = 0.3
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_qh4da"]
+height = 1.0
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_d00tk")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.50601, 0)
 shape = SubResource("CylinderShape3D_rdjb6")
 
 [node name="visuals" type="Node3D" parent="."]
@@ -23,3 +27,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25818, 0)
 
 [node name="Camera3D" type="Camera3D" parent="camera_mount"]
 transform = Transform3D(1, 0, 0, 0, 0.999511, 0.0312538, 0, -0.0312538, 0.999511, 0.250803, -0.21315, 1.66645)
+
+[node name="hitbox" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+collision_layer = 0
+collision_mask = 4
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00609529, 0)
+shape = SubResource("CylinderShape3D_qh4da")
+
+[connection signal="body_entered" from="hitbox" to="." method="_on_hitbox_body_entered"]

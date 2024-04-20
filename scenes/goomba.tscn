@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://c6dpn2dncv4lm"]
+
+[ext_resource type="Script" path="res://scripts/mob/goomba.gd" id="1_tk4vi"]
+[ext_resource type="PackedScene" uid="uid://bvv6rifvyi675" path="res://assets/goomba/scene.gltf" id="2_wan62"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tng8m"]
+size = Vector3(0.8, 1, 0.8)
+
+[node name="goomba" type="CharacterBody3D"]
+collision_mask = 7
+script = ExtResource("1_tk4vi")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+
+[node name="visuals" parent="." instance=ExtResource("2_wan62")]
+transform = Transform3D(-0.01, 0, -8.74228e-10, 0, 0.01, 0, 8.74228e-10, 0, -0.01, 0, 0.105264, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_tng8m")
