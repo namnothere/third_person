@@ -1,15 +1,14 @@
 extends Node3D
 
 @export var mob_scene: PackedScene
-var scoreLabel: Label
+@export var player: CharacterBody3D
+@onready var building: Node3D = $map_desert/NavigationRegion3D/building
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$UserInterface/Retry.hide()
-	scoreLabel = get_node('UserInterface/ScoreLabel')
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta):
-	pass
+	$UserInterface/Info.show()
+	building.connect("isPlayerInSafeArea", _on_safe_area_changed.bind())
 
 func _on_mob_timer_timeout():
 	var mob = mob_scene.instantiate()
@@ -18,18 +17,26 @@ func _on_mob_timer_timeout():
 	var mob_spawn_location = get_node("SpawnPath/SpawnLocation")
 	# And give it a random offset.
 	mob_spawn_location.progress_ratio = randf()
-	print("spawn location: ", mob_spawn_location)
 
 	var player_position = $Player.position
 	mob.initialize(mob_spawn_location.position, player_position)
-	#mob.squashed.connect(scoreLabel._on_mob_squashed.bind())
-	# Spawn the mob by adding it to the Main scene.
 	add_child(mob)
 
-func _on_player_hit():
-	$MobTimer.stop()
-	$UserInterface/Retry.show()
-	
 func _unhandled_input(event):
 	if event.is_action_pressed("ui_accept") and $UserInterface/Retry.visible:
 		get_tree().reload_current_scene()
+
+func _on_player_die():
+	$MobTimer.stop()
+	$UserInterface/Info.hide()
+	$UserInterface/Retry.show()
+
+func _on_safe_area_changed(new_value):
+	if new_value == true:
+		$MobTimer.stop()
+		print("stopped mob spawner")
+	elif new_value == false:
+		$MobTimer.start()
+		print("resumed mob spawner")
+	else:
+		print("invalid value")

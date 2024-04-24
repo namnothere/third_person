@@ -1,6 +1,13 @@
 extends CharacterBody3D
 
-signal hit
+signal hit(damage)
+signal die
+signal updated_health
+
+@export var health = 10.0
+@export var sens_horizontal = 0.5
+@export var sens_vertical = 0.5
+@export var bounce_impulse = 4
 
 @onready var camera_mount = $camera_mount
 @onready var animation_player = $visuals/stinky/AnimationPlayer
@@ -11,16 +18,14 @@ const JUMP_VELOCITY = 4.5
 
 var walking_speed = 3.0
 var running_speed = 5.0
-
-@export var sens_horizontal = 0.5
-@export var sens_vertical = 0.5
-@export var bounce_impulse = 4
+var regen_health = 1.0
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity") - 1
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	#self.hit.connect(self._damage.bind())
 	
 func _input(event):
 	if event is InputEventMouseMotion:
@@ -29,7 +34,6 @@ func _input(event):
 		camera_mount.rotate_x(deg_to_rad(-event.relative.y * sens_vertical))
 
 func _physics_process(delta):
-	
 	if Input.is_action_pressed("speed_up"):
 		SPEED = running_speed
 	else:
@@ -81,9 +85,17 @@ func _physics_process(delta):
 	move_and_slide()
 
 func _on_hitbox_body_entered(_body):
-	die()
 	print("_body", _body.name)
+	_damage(5.0)
 
-func die():
-	hit.emit()
-	queue_free()
+func _damage(damage: float):
+	health -= damage
+	hit.emit(damage, health)
+	if health <= 0:
+		_die()
+
+func _die():
+	die.emit()
+
+func _regen():
+	pass

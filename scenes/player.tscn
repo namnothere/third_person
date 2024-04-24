@@ -30,12 +30,11 @@ transform = Transform3D(1, 0, 0, 0, 0.999511, 0.0312538, 0, -0.0312538, 0.999511
 
 [node name="hitbox" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
-collision_layer = 0
+collision_layer = 2
 collision_mask = 4
 monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="hitbox"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00609529, 0)
 shape = SubResource("CylinderShape3D_qh4da")
 
 [connection signal="body_entered" from="hitbox" to="." method="_on_hitbox_body_entered"]

@@ -1,8 +1,8 @@
 extends CharacterBody3D
 signal squashed
 
-@export var min_speed = 2.0
-@export var max_speed = 4.0
+@export var min_speed = 3.5
+@export var max_speed = 6.0
 var random_speed = randi_range(min_speed, max_speed)
 var SPEED = random_speed
 #
@@ -10,9 +10,9 @@ var SPEED = random_speed
 @onready var player: Node3D = null
 
 @onready var nav_agent = $NavigationAgent3D
-@onready var scoreLabel: Label = $"../UserInterface/ScoreLabel"
+@onready var scoreLabel: Label = $"../UserInterface/Info/ScoreLabel"
 @onready var building: Node3D = $"../map_desert/NavigationRegion3D/building"
-
+@onready var animation_player: AnimationPlayer = $visuals/AnimationPlayer
 var next_location = null
 var isPlayerInside = false
 var isSetup = false
@@ -25,7 +25,6 @@ func _ready():
 	player = get_node(player_path)
 	self.squashed.connect(scoreLabel._on_mob_squashed.bind())
 	building.connect("isPlayerInSafeArea", _on_safe_area_changed.bind())
-	
 	add_to_group("mob")
 	
 func actor_setup():
@@ -68,11 +67,11 @@ func squash():
 
 func _on_safe_area_changed(new_value):
 	if new_value == true:
-		print("Quit chasing player")
 		isPlayerInside = true
+		animation_player.pause()
 	elif new_value == false:
-		print("Continue chasing player")
 		isPlayerInside = false
+		animation_player.play("Take 001")
 	else:
 		print("invalid value")
 		

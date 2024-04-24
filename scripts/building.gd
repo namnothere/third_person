@@ -11,6 +11,7 @@ func _process(_delta):
 	
 func _on_body_entered(_body: Node3D) -> void:
 	isPlayerInSafeArea.emit(true)
-
+	#get_tree().call_group("mob", "_on_safe_area_changed", true)
 func _on_body_exited(_body):
 	isPlayerInSafeArea.emit(false)
+	#get_tree().call_group("mob", "_on_safe_area_changed", false)
