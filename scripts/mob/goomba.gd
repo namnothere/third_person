@@ -1,17 +1,16 @@
 extends CharacterBody3D
-signal squashed
+signal mob_killed
 
 @export var min_speed = 3.5
 @export var max_speed = 6.0
+@export var player: Node3D
+@export var UI: Control
+@export var building: Node3D
+
 var random_speed = randi_range(min_speed, max_speed)
 var SPEED = random_speed
-#
-@onready var player_path: NodePath = "../Player"
-@onready var player: Node3D = null
 
 @onready var nav_agent = $NavigationAgent3D
-@onready var scoreLabel: Label = $"../UserInterface/Info/ScoreLabel"
-@onready var building: Node3D = $"../map_desert/NavigationRegion3D/building"
 @onready var animation_player: AnimationPlayer = $visuals/AnimationPlayer
 var next_location = null
 var isPlayerInside = false
@@ -22,8 +21,8 @@ var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	call_deferred("actor_setup")
-	player = get_node(player_path)
-	self.squashed.connect(scoreLabel._on_mob_squashed.bind())
+	
+	self.mob_killed.connect(UI._on_mob_killed.bind())
 	building.connect("isPlayerInSafeArea", _on_safe_area_changed.bind())
 	add_to_group("mob")
 	
@@ -33,10 +32,13 @@ func actor_setup():
 	isSetup = true
 	
 # This function will be called from the Main scene.
-func initialize(start_position, player_position):
+func initialize(start_position, Player: CharacterBody3D, ui: Control, Building: Area3D):
 	# We position the mob by placing it at start_position
 	# and rotate it towards player_position, so it looks at the player.
-	look_at_from_position(start_position, player_position, Vector3.UP)
+	player = Player
+	UI = ui
+	building = Building
+	look_at_from_position(start_position, Player.position, Vector3.UP)
 	# Rotate this mob randomly within range of -45 and +45 degrees,
 	# so that it doesn't move directly towards the player.
 	rotate_y(randf_range(-PI / 4, PI / 4))
@@ -62,7 +64,7 @@ func chasingPlayer(_delta):
 	move_and_slide()
 
 func squash():
-	squashed.emit()
+	mob_killed.emit()
 	queue_free()
 
 func _on_safe_area_changed(new_value):

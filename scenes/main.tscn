@@ -1,12 +1,11 @@
-[gd_scene load_steps=16 format=3 uid="uid://cv3kgongck8w"]
+[gd_scene load_steps=15 format=3 uid="uid://cv3kgongck8w"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_hirjf"]
 [ext_resource type="Material" uid="uid://bx5t1brcnrpt7" path="res://materials/ground.tres" id="4_37hm1"]
 [ext_resource type="PackedScene" uid="uid://c27s06nfgic2m" path="res://scenes/player.tscn" id="5_ecueq"]
+[ext_resource type="Script" path="res://scripts/UI/UserInterface.gd" id="6_1y4x4"]
 [ext_resource type="PackedScene" uid="uid://3lxt3v0qf87j" path="res://scenes/building.tscn" id="7_2nqmy"]
 [ext_resource type="PackedScene" uid="uid://c6dpn2dncv4lm" path="res://scenes/goomba.tscn" id="7_8587w"]
-[ext_resource type="Script" path="res://scripts/UI/ScoreLabel.gd" id="7_e7ghj"]
-[ext_resource type="Script" path="res://scripts/UI/HealthBar.gd" id="7_elov4"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_f4kki"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -55,16 +54,20 @@ border_width_top = 5
 border_width_bottom = 5
 border_color = Color(1, 1, 1, 1)
 
-[node name="world" type="Node3D"]
+[node name="world" type="Node3D" node_paths=PackedStringArray("player", "building", "UI", "mobTimer")]
 script = ExtResource("1_hirjf")
 mob_scene = ExtResource("7_8587w")
+player = NodePath("Player")
+building = NodePath("map_desert/NavigationRegion3D/building")
+UI = NodePath("UserInterface")
+mobTimer = NodePath("MobTimer")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_pecc2")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, -76.4827, 88.3146, 132.472)
-light_energy = 0.09
+light_energy = 0.635
 light_indirect_energy = 0.59
 light_volumetric_fog_energy = 0.78
 shadow_enabled = true
@@ -90,7 +93,7 @@ collision_mask = 2
 collision_layer = 2
 collision_mask = 5
 safe_margin = 0.1
-health = 20.0
+health = 15.0
 
 [node name="MobTimer" type="Timer" parent="."]
 wait_time = 2.0
@@ -102,13 +105,15 @@ curve = SubResource("Curve3D_qogsu")
 [node name="SpawnLocation" type="PathFollow3D" parent="SpawnPath"]
 transform = Transform3D(-0.00993633, 6.69339e-06, -0.99995, -2.27374e-13, 1, 6.69372e-06, 0.99995, 6.65113e-08, -0.00993633, -13.468, 0.0131779, -16.5634)
 
-[node name="UserInterface" type="Control" parent="."]
+[node name="UserInterface" type="Control" parent="." node_paths=PackedStringArray("player")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("6_1y4x4")
+player = NodePath("../Player")
 
 [node name="Info" type="Control" parent="UserInterface"]
 anchors_preset = 0
@@ -125,7 +130,6 @@ theme = SubResource("Theme_dr5d6")
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 35
 text = "Score: 0"
-script = ExtResource("7_e7ghj")
 
 [node name="HealthBar" type="ProgressBar" parent="UserInterface/Info"]
 layout_mode = 0
@@ -137,9 +141,9 @@ theme_override_styles/background = SubResource("StyleBoxFlat_jelap")
 theme_override_styles/fill = SubResource("StyleBoxFlat_cfp6b")
 value = 13.0
 show_percentage = false
-script = ExtResource("7_elov4")
 
 [node name="HealthLabel" type="Label" parent="UserInterface/Info/HealthBar"]
+visible = false
 layout_mode = 0
 offset_left = 3.0
 offset_top = -30.0
@@ -175,8 +179,10 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 30
 text = "Press Enter to retry"
 
-[node name="goomba" parent="." groups=["mob"] instance=ExtResource("7_8587w")]
+[node name="goomba" parent="." node_paths=PackedStringArray("player", "UI", "building") groups=["mob"] instance=ExtResource("7_8587w")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.96451, -0.0321749, 11.3067)
+player = NodePath("../Player")
+UI = NodePath("../UserInterface")
+building = NodePath("../map_desert/NavigationRegion3D/building")
 
-[connection signal="die" from="Player" to="." method="_on_player_die"]
 [connection signal="timeout" from="MobTimer" to="." method="_on_mob_timer_timeout"]

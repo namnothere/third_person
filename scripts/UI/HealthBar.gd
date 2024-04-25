@@ -1,7 +1,7 @@
 extends ProgressBar
 
-@onready var healthLabel = $HealthLabel
-@onready var player = $"../../../Player"
+@export var healthLabel: Label
+@export var player: CharacterBody3D
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

@@ -1,8 +1,7 @@
 extends CharacterBody3D
 
-signal hit(damage)
+signal health_update(health)
 signal die
-signal updated_health
 
 @export var health = 10.0
 @export var sens_horizontal = 0.5
@@ -85,12 +84,11 @@ func _physics_process(delta):
 	move_and_slide()
 
 func _on_hitbox_body_entered(_body):
-	print("_body", _body.name)
 	_damage(5.0)
 
 func _damage(damage: float):
 	health -= damage
-	hit.emit(damage, health)
+	health_update.emit(health)
 	if health <= 0:
 		_die()
 
