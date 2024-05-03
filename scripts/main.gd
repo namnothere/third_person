@@ -8,6 +8,7 @@ extends Node3D
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	get_tree().call_group("mob", "_on_safe_area_changed", false)
 	UI.get_node("Retry").hide()
 	UI.get_node("Info").show()
 	building.connect("isPlayerInSafeArea", _on_safe_area_changed.bind())
@@ -29,6 +30,7 @@ func _unhandled_input(event):
 
 func _on_player_die():
 	mobTimer.stop()
+	get_tree().call_group("mob", "_on_safe_area_changed", true)
 	UI.get_node("Info").hide()
 	UI.get_node("Retry").show()
 

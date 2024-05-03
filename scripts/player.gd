@@ -6,17 +6,20 @@ signal die
 @export var health = 10.0
 @export var sens_horizontal = 0.5
 @export var sens_vertical = 0.5
-@export var bounce_impulse = 4
+@export var bounce_impulse = 3.5
 
 @onready var camera_mount = $camera_mount
 @onready var animation_player = $visuals/stinky/AnimationPlayer
 @onready var visual = $visuals
+@onready var audioPlayer = $GameMusic/AudioGetDamagePlayer
+@onready var audioJump = $GameMusic/Jump
 
 var SPEED = 5.0
 const JUMP_VELOCITY = 4.5
 
 var walking_speed = 3.0
 var running_speed = 5.0
+var base_damage = 5.0
 var regen_health = 1.0
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
@@ -24,7 +27,6 @@ var gravity = ProjectSettings.get_setting("physics/3d/default_gravity") - 1
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	#self.hit.connect(self._damage.bind())
 	
 func _input(event):
 	if event is InputEventMouseMotion:
@@ -44,10 +46,9 @@ func _physics_process(delta):
 
 	# Handle jump.
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
+		audioJump.play()
 		velocity.y = JUMP_VELOCITY
 
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
 	var input_dir = Input.get_vector("left", "right", "forward", "backward")
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
@@ -84,13 +85,14 @@ func _physics_process(delta):
 	move_and_slide()
 
 func _on_hitbox_body_entered(_body):
-	_damage(5.0)
+	_damage(base_damage)
 
 func _damage(damage: float):
 	health -= damage
 	health_update.emit(health)
 	if health <= 0:
 		_die()
+	audioPlayer.play()
 
 func _die():
 	die.emit()

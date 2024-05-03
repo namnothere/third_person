@@ -6,6 +6,7 @@ signal mob_killed
 @export var player: Node3D
 @export var UI: Control
 @export var building: Node3D
+@export var isExample: bool = false
 
 var random_speed = randi_range(min_speed, max_speed)
 var SPEED = random_speed
@@ -13,13 +14,14 @@ var SPEED = random_speed
 @onready var nav_agent = $NavigationAgent3D
 @onready var animation_player: AnimationPlayer = $visuals/AnimationPlayer
 var next_location = null
-var isPlayerInside = false
+var isChasingPlayer = true
 var isSetup = false
 
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	if (isExample == true): animation_player.pause()
 	call_deferred("actor_setup")
 	
 	self.mob_killed.connect(UI._on_mob_killed.bind())
@@ -44,9 +46,9 @@ func initialize(start_position, Player: CharacterBody3D, ui: Control, Building: 
 	rotate_y(randf_range(-PI / 4, PI / 4))
 	
 func _physics_process(_delta):
-	if player == null: _ready()
+	if player == null: return
 	if isSetup == false: await actor_setup()
-	if isPlayerInside == false && player != null:
+	if isChasingPlayer == true && player != null:
 		chasingPlayer(_delta)
 
 func chasingPlayer(_delta):
@@ -68,11 +70,12 @@ func squash():
 	queue_free()
 
 func _on_safe_area_changed(new_value):
+	if isExample == true: return
 	if new_value == true:
-		isPlayerInside = true
+		isChasingPlayer = false
 		animation_player.pause()
 	elif new_value == false:
-		isPlayerInside = false
+		isChasingPlayer = true
 		animation_player.play("Take 001")
 	else:
 		print("invalid value")
