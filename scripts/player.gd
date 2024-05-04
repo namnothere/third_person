@@ -1,12 +1,10 @@
 extends CharacterBody3D
 
-signal health_update(health)
-signal die
-
 @export var health = 10.0
 @export var sens_horizontal = 0.5
 @export var sens_vertical = 0.5
 @export var bounce_impulse = 3.5
+@export var events: Node2D
 
 @onready var camera_mount = $camera_mount
 @onready var animation_player = $visuals/stinky/AnimationPlayer
@@ -89,13 +87,13 @@ func _on_hitbox_body_entered(_body):
 
 func _damage(damage: float):
 	health -= damage
-	health_update.emit(health)
+	events.emit_signal("health_update", health)
 	if health <= 0:
 		_die()
 	audioPlayer.play()
 
 func _die():
-	die.emit()
+	events.emit_signal("die")
 
 func _regen():
 	pass

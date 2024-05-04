@@ -3,6 +3,7 @@ extends Control
 @export var player: CharacterBody3D
 @export var audioPlayer: AudioStreamPlayer
 @export var timer: Timer
+@export var events: Node2D
 
 @onready var scoreLabel = $Info/ScoreLabel
 @onready var healthBar = $Info/HealthBar
@@ -10,7 +11,9 @@ extends Control
 var score = 0
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	player.connect("health_update", _on_health_update.bind())
+	events.connect("health_update", _on_health_update)
+	events.connect("mob_killed", _on_mob_killed)
+	
 	healthBar.get_node("HealthLabel").text = "Health: %s" % player.health
 	healthBar.value = player.health
 	healthBar.max_value = player.health
