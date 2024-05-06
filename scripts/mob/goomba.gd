@@ -1,5 +1,4 @@
 extends CharacterBody3D
-signal mob_killed
 
 @export var min_speed = 3.5
 @export var max_speed = 6.0
@@ -7,6 +6,7 @@ signal mob_killed
 @export var UI: Control
 @export var building: Node3D
 @export var isExample: bool = false
+@export var events: Node2D
 
 var random_speed = randi_range(min_speed, max_speed)
 var SPEED = random_speed
@@ -24,8 +24,10 @@ func _ready():
 	if (isExample == true): animation_player.pause()
 	call_deferred("actor_setup")
 	
-	self.mob_killed.connect(UI._on_mob_killed.bind())
-	building.connect("isPlayerInSafeArea", _on_safe_area_changed.bind())
+	#self.mob_killed.connect(UI._on_mob_killed.bind())
+	#building.connect("isPlayerInSafeArea", _on_safe_area_changed.bind())
+	if events:
+		events.connect("isPlayerInSafeArea", _on_safe_area_changed)
 	add_to_group("mob")
 	
 func actor_setup():
@@ -34,12 +36,15 @@ func actor_setup():
 	isSetup = true
 	
 # This function will be called from the Main scene.
-func initialize(start_position, Player: CharacterBody3D, ui: Control, Building: Area3D):
+func initialize(start_position, Player: CharacterBody3D, ui: Control, Building: Area3D, Events: Node2D):
 	# We position the mob by placing it at start_position
 	# and rotate it towards player_position, so it looks at the player.
 	player = Player
 	UI = ui
 	building = Building
+	events = Events
+	events.connect("isPlayerInSafeArea", _on_safe_area_changed)
+	
 	look_at_from_position(start_position, Player.position, Vector3.UP)
 	# Rotate this mob randomly within range of -45 and +45 degrees,
 	# so that it doesn't move directly towards the player.
@@ -66,7 +71,8 @@ func chasingPlayer(_delta):
 	move_and_slide()
 
 func squash():
-	mob_killed.emit()
+	if (events != null):
+		events.emit_signal("mob_killed")
 	queue_free()
 
 func _on_safe_area_changed(new_value):

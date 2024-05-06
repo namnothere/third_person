@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://cv3kgongck8w"]
+[gd_scene load_steps=18 format=3 uid="uid://cv3kgongck8w"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_hirjf"]
 [ext_resource type="Material" uid="uid://bx5t1brcnrpt7" path="res://materials/ground.tres" id="4_37hm1"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://3lxt3v0qf87j" path="res://scenes/building.tscn" id="7_2nqmy"]
 [ext_resource type="PackedScene" uid="uid://c6dpn2dncv4lm" path="res://scenes/goomba.tscn" id="7_8587w"]
 [ext_resource type="AudioStream" uid="uid://dfvfr80vemx15" path="res://audios/sfx/mob_killed.mp3" id="7_yfy7e"]
+[ext_resource type="Script" path="res://scripts/Events.gd" id="9_nu3fv"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_f4kki"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -56,13 +57,14 @@ border_width_top = 5
 border_width_bottom = 5
 border_color = Color(1, 1, 1, 1)
 
-[node name="world" type="Node3D" node_paths=PackedStringArray("player", "building", "UI", "mobTimer")]
+[node name="world" type="Node3D" node_paths=PackedStringArray("player", "building", "UI", "mobTimer", "events")]
 script = ExtResource("1_hirjf")
 mob_scene = ExtResource("7_8587w")
 player = NodePath("Player")
 building = NodePath("map_desert/NavigationRegion3D/building")
 UI = NodePath("UserInterface")
 mobTimer = NodePath("MobTimer")
+events = NodePath("Events")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_pecc2")
@@ -87,17 +89,19 @@ use_collision = true
 collision_mask = 0
 size = Vector3(50, 1, 50)
 
-[node name="building" parent="map_desert/NavigationRegion3D" instance=ExtResource("7_2nqmy")]
+[node name="building" parent="map_desert/NavigationRegion3D" node_paths=PackedStringArray("events") instance=ExtResource("7_2nqmy")]
 transform = Transform3D(2.73494, 0, -1.23292, 0, 3, 0, 1.23292, 0, 2.73494, 4.07533, -0.0927004, -9.52698)
 collision_mask = 2
+events = NodePath("../../../Events")
 
-[node name="Player" parent="." instance=ExtResource("5_ecueq")]
+[node name="Player" parent="." node_paths=PackedStringArray("events") instance=ExtResource("5_ecueq")]
 transform = Transform3D(-0.796899, 0, 0.604112, 0, 1, 0, -0.604112, 0, -0.796899, 0, 0, 0)
 collision_layer = 2
 collision_mask = 5
 safe_margin = 0.1
 script = ExtResource("6_m8gkp")
 health = 20.0
+events = NodePath("../Events")
 
 [node name="MobTimer" type="Timer" parent="."]
 wait_time = 1.5
@@ -108,7 +112,7 @@ curve = SubResource("Curve3D_qogsu")
 [node name="SpawnLocation" type="PathFollow3D" parent="SpawnPath"]
 transform = Transform3D(-0.00993633, 6.69339e-06, -0.99995, -2.27374e-13, 1, 6.69372e-06, 0.99995, 6.65113e-08, -0.00993633, -13.468, 0.0131779, -16.5634)
 
-[node name="UserInterface" type="Control" parent="." node_paths=PackedStringArray("player", "audioPlayer", "timer")]
+[node name="UserInterface" type="Control" parent="." node_paths=PackedStringArray("player", "audioPlayer", "timer", "events")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -119,6 +123,7 @@ script = ExtResource("6_1y4x4")
 player = NodePath("../Player")
 audioPlayer = NodePath("../WorldAudio/AudioMobKilled")
 timer = NodePath("../MobTimer")
+events = NodePath("../Events")
 
 [node name="Info" type="Control" parent="UserInterface"]
 anchors_preset = 0
@@ -184,15 +189,19 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 30
 text = "Press Enter to retry"
 
-[node name="goomba" parent="." node_paths=PackedStringArray("UI", "building") groups=["mob"] instance=ExtResource("7_8587w")]
+[node name="goomba" parent="." node_paths=PackedStringArray("UI", "building", "events") groups=["mob"] instance=ExtResource("7_8587w")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.96451, -0.0321749, 11.3067)
 UI = NodePath("../UserInterface")
 building = NodePath("../map_desert/NavigationRegion3D/building")
 isExample = true
+events = NodePath("../Events")
 
 [node name="WorldAudio" type="Node2D" parent="."]
 
 [node name="AudioMobKilled" type="AudioStreamPlayer" parent="WorldAudio"]
 stream = ExtResource("7_yfy7e")
+
+[node name="Events" type="Node2D" parent="."]
+script = ExtResource("9_nu3fv")
 
 [connection signal="timeout" from="MobTimer" to="." method="_on_mob_timer_timeout"]

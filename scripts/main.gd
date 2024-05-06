@@ -5,14 +5,16 @@ extends Node3D
 @export var building: Node3D
 @export var UI: Control
 @export var mobTimer: Timer
+@export var events: Node2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	get_tree().call_group("mob", "_on_safe_area_changed", false)
 	UI.get_node("Retry").hide()
 	UI.get_node("Info").show()
-	building.connect("isPlayerInSafeArea", _on_safe_area_changed.bind())
-	player.connect("die", _on_player_die.bind())
+	events.connect("die", _on_player_die)
+	events.connect("isPlayerInSafeArea", _on_safe_area_changed)
+	#building.connect("isPlayerInSafeArea", _on_safe_area_changed.bind())
 
 func _on_mob_timer_timeout():
 	var mob = mob_scene.instantiate()
@@ -21,7 +23,7 @@ func _on_mob_timer_timeout():
 	var mob_spawn_location = get_node("SpawnPath/SpawnLocation")
 	# And give it a random offset.
 	mob_spawn_location.progress_ratio = randf()
-	mob.initialize(mob_spawn_location.position, player, UI, building)
+	mob.initialize(mob_spawn_location.position, player, UI, building, events)
 	add_child(mob)
 
 func _unhandled_input(event):
